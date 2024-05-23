@@ -4,7 +4,7 @@ import {Model} from 'sequelize';
 
 interface ProjectAttributes{
   id:number,
-  title:string,
+  nombre:string,
   status:string
 }
 
