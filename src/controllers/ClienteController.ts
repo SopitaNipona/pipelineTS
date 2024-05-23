@@ -17,7 +17,7 @@ class ClienteController extends AbstractController {
   
   protected initRoutes(): void {
     this.router.post(
-      "/Agrear",
+      "/agregar",
       this.postAgregarCliente.bind(this)
     );
     this.router.get(
@@ -41,7 +41,7 @@ class ClienteController extends AbstractController {
   private async getConsultarClientes (req: Request, res: Response) {
     try {
         const clientes = await db.Cliente.findAll({
-            attributes: ['id', 'nombre']
+            attributes: ['id', 'nombre', 'correo']
         });
   
         res.status(200).json(clientes);
