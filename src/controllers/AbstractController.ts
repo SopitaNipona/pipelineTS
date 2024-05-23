@@ -1,41 +1,25 @@
 import { Router } from "express";
-import { AWSError,CognitoIdentityServiceProvider } from "aws-sdk";
-import { PromiseResult } from "aws-sdk/lib/request";
 
-//Middlewares
-import ValidationErrorMiddleware from "../middlewares/validationError";
-import AuthMiddleware from "../middlewares/authorization";
-import PermissionMiddleware from "../middlewares/permission";
+export default abstract class AbstractController {
+  // Atributos de la instancia
+  private _router: Router;
+  private _prefix: string;
 
-//Servicios
-import CognitoService from "../services/cognitoService";
+  // Métodos getter
+  public get router(): Router {
+    return this._router;
+  }
+  public get prefix(): string {
+    return this._prefix;
+  }
 
-export default abstract class AbstractController{
-    //Atributos
-    private _router:Router = Router();
-    private _prefix:string;
+  // Método constructor
+  protected constructor(prefix: string) {
+    this._router = Router();
+    this._prefix = prefix;
+    this.initializeRoutes();
+  }
 
-    protected handleErrors = ValidationErrorMiddleware.handleErrors;
-    protected authMiddleware = AuthMiddleware.getInstance();
-    protected permissionMiddleware = PermissionMiddleware.getInstance();
-    protected cognitoService = CognitoService.getInstance();
-
-    public get router():Router{
-        return this._router;
-    }
-
-    public get prefix():string{
-        return this._prefix;
-    }
-
-    protected constructor(prefix:string){
-        this._prefix=prefix;
-        this.initRoutes();
-        
-    }
-    //Inicializar las rutas
-    protected abstract initRoutes():void;
-    //Validar el body de la petición
-    protected abstract validateBody(type:any):any;
-
+  // Método abstracto (debe ser implementado en las clases hijas)
+  protected abstract initializeRoutes(): void;
 }

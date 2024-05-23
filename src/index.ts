@@ -1,30 +1,18 @@
 import Server from "./providers/Server";
-import express from 'express';
-import cors from 'cors';
-import UserController from "./controllers/UserController";
-import AuthenticationController from "./controllers/AuthenticationController";
+import { PORT, NODE_ENV } from "./config";
+import express from "express";
+import cors from "cors";
+import ClienteController from "./controllers/ClienteController";
 
-const servidor = new Server({
-    port:8080,
-    middlewares:[
-        express.json(),
-        express.urlencoded({extended:true}),
-        cors()
-    ],
-    controllers:[
-        UserController.getInstance(),
-        AuthenticationController.getInstance()
-    ],
-    env:'development'
+
+
+const server = new Server({
+  port: PORT,
+  env: NODE_ENV,
+  middlewares: [express.json(), express.urlencoded({ extended: true }), cors()],
+  controllers: [
+    ClienteController.instance,
+  ],
 });
 
-declare global{
-    namespace Express{
-        interface Request{
-            user:string;
-            token:string;
-        }
-    }
-}
-
-servidor.init();
+server.init();
