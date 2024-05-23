@@ -17,11 +17,11 @@ class ClienteController extends AbstractController {
   
   protected initRoutes(): void {
     this.router.post(
-      "/crear",
+      "/Agrear",
       this.postAgregarCliente.bind(this)
     );
     this.router.get(
-      "/consultar",
+      "/TotalClientes",
       this.getConsultarClientes.bind(this)
     );
   }
@@ -29,7 +29,7 @@ class ClienteController extends AbstractController {
   private async postAgregarCliente(req: Request, res: Response) {
     try {
       console.log(req.body);
-      await db.Videogame.create(req.body);
+      await db.Cliente.create(req.body);
       console.log("Cliente creado");
       res.status(200).send("Cliente creado");
     } catch (error: any) {
@@ -41,7 +41,7 @@ class ClienteController extends AbstractController {
   private async getConsultarClientes (req: Request, res: Response) {
     try {
         const clientes = await db.Cliente.findAll({
-            attributes: ['idCliente', 'nombre']
+            attributes: ['id', 'nombre']
         });
   
         res.status(200).json(clientes);

@@ -7,7 +7,7 @@ const VideoJuegoModel = dynamodb.define('videojuego',{
     timestamps:false,
     schema:{
         VideoJuegoId:dynamodb.types.uuid(),
-        nombre:joi.string(),
+        g:joi.string(),
         genero:joi.string(),
         calificacion:joi.number()
     },

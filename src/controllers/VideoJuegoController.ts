@@ -18,7 +18,7 @@ class VideoJuegoController extends AbstractController {
   protected initRoutes(): void {
     this.router.post("/agregar", this.postAgregarVideoJuego.bind(this));
     this.router.get(
-      "/consultar",
+      "/TotalVideoJuegos",
       this.getConsultarVideoJuegos.bind(this)
     );
   }
