@@ -1,23 +1,19 @@
 import { Response, Request, NextFunction } from 'express';
-import { COGNITO_USER_POOL_ID, AWS_REGION } from '../config';
+import { COGNITO_POOL_ID, AWS_REGION } from '../config';
 import jwt from 'jsonwebtoken';
 import jwkToPem from 'jwk-to-pem';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 const pems: { [key: string]: string } = {};
 class AuthMiddleware {
 	private poolRegion = AWS_REGION;
-	private userPoolId = COGNITO_USER_POOL_ID;
+	private userPoolId = COGNITO_POOL_ID;
 
 	// Singleton
-	private static instance: AuthMiddleware;
-	public static getInstance(): AuthMiddleware {
-		if (this.instance) {
-			return this.instance;
-		}
-		this.instance = new AuthMiddleware();
-		return this.instance;
-	}
+	private static _instance: AuthMiddleware;
+	public static get instance():AuthMiddleware{
+        return this._instance || (this._instance = new this());
+    }
 
 	private constructor() {
 		this.getAWSCognitoPems();
@@ -33,8 +29,7 @@ class AuthMiddleware {
 			const kid = decodedJWT.header.kid;
 			if(kid !== undefined){
 				if (Object.keys(pems).includes(kid)) {
-					console.log("Verificado")
-					//return res.status(401).end();
+					console.log("Verificado")					
 				}
 				const pem = pems[kid];
 				jwt.verify(token, pem, { algorithms: ['RS256'] }, function (err:any) {
@@ -54,16 +49,18 @@ class AuthMiddleware {
 		}
 	}
 
+	
+
+
 	private async getAWSCognitoPems() {
 		const URL = `https://cognito-idp.${this.poolRegion}.amazonaws.com/${this.userPoolId}/.well-known/jwks.json`;
 		try {
-			const response = await fetch(URL);
-			
+			const response = await axios.get(URL);
 			if (response.status !== 200) {
 				throw 'COGNITO PEMS ERROR';
 			}
 			
-			const data :any= await response.json();
+			const data :any= await response.data;
 			// "kid": "1234example=",
 			// "alg": "RS256",
 			// "kty": "RSA",
