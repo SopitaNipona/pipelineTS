@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
-
-interface AuthenticatedRequest extends Request {
-  user?: { id: number };
-}
+import { Sequelize } from "sequelize";
 
 class ClienteController extends AbstractController {
   // Singleton
@@ -19,52 +16,36 @@ class ClienteController extends AbstractController {
   }
 
   protected initializeRoutes(): void {
-    this.router.get("/id", this.getId.bind(this));
-    this.router.get("/perfil",this.getPerfil.bind(this)
-    );
-  
+    this.router.post("/crear", this.postCrear.bind(this));
+    this.router.get("/TotalClientes",this.getTotalClientes.bind(this));
+}
+
+private async postCrear(req: Request, res: Response){
+  try{
+      console.log(req.body);
+      await db.Agente.create(req.body);
+      console.log("Agente creado")
+      res.status(200).send("Agente creado");
+  }catch(err){
+      console.error(err);
+      res.status(500).send("Error al crear agente");
   }
-
-  private async getId(req: Request, res: Response) {
-    try {
-      const id = req.query.id;
-      if (!id) {
-        return res.status(400).send("ID es requerido");
-      }
-
-      const cliente = await db.Cliente.findByPk(id as string);
-      if (!cliente) {
-        return res.status(404).send("Cliente no encontrado");
-      }
-
-      res.status(200).json(cliente);
-    } catch (err) {
-      console.error("Error al encontrar cliente:", err);
-      res.status(500).send("Error al encontrar cliente");
-    }
-  }
+}
   
+private async getTotalClientes (req: Request, res: Response) {
+  try {
+      const clientes = await db.Cliente.findAll({
+          attributes: ['idCliente', 'nombre']
+      });
 
-  private async getPerfil(req: AuthenticatedRequest, res: Response) {
-    try {
-      const clienteId = req.user?.id;
-      if (!clienteId) {
-        return res.status(401).send("Acceso no autorizado");
-      }
-
-      const cliente = await db.Cliente.findByPk(clienteId);
-      if (!cliente) {
-        return res.status(404).send("Cliente no encontrado");
-      }
-
-      res.status(200).json(cliente);
-    } catch (err) {
-      console.error("Error al obtener el perfil del cliente:", err);
-      res.status(500).send("Error al obtener el perfil del cliente");
-    }
+      res.status(200).json(clientes);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send("Error al obtener clientes");
   }
+}
 
-  
+
 }
 
 export default ClienteController;
